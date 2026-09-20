@@ -31,8 +31,8 @@ def infix_to_postfix(expression, trace=None):
     operators = ArrayStack()
     for token in tokenize(expression):
         if token in PRECEDENCE:
-            while  (not operators.is_empty() 
-                    and operators.peek() != "(" 
+            while (not operators.is_empty()
+                    and operators.peek() != "("
                     and (PRECEDENCE[operators.peek()] > PRECEDENCE[token]
                         or (PRECEDENCE[operators.peek()] == PRECEDENCE[token]
                             and token not in RIGHT_ASSOCIATIVE))):
@@ -43,8 +43,6 @@ def infix_to_postfix(expression, trace=None):
             operators.push(token)
             action = "push ("
         elif token == ")":
-            operators.push(token)
-            action = "push )"
             while not operators.is_empty() and operators.peek() != "(":
                 output.append(operators.pop())
             if operators.is_empty():
@@ -54,9 +52,9 @@ def infix_to_postfix(expression, trace=None):
         else:
             output.append(token)
             action = "operand to output"
-            if trace is not None:
-                trace.append((token, action, " ".join(output),
-                     " ".join(operators._items)))
+        if trace is not None:
+            trace.append((token, action, " ".join(output),
+                        " ".join(operators._items)))
     while not operators.is_empty():
         top = operators.pop()
         if top == "(":
@@ -67,21 +65,20 @@ def infix_to_postfix(expression, trace=None):
     return " ".join(output)
 
 
-
 def evaluate_postfix(expression, trace=None):
     values = ArrayStack()
     for token in tokenize(expression):
         if token in PRECEDENCE:
             if values.size() < 2:
-                raise ValueError(f"not enough operands for operator {token}")
+                raise ValueError(f"not enough operands for operator" + token)
             right = values.pop()
             left = values.pop()
             values.push(apply_operator(token, left, right))
         else:
             values.push(float(token))
         if trace is not None:
-            trace.append((token, action, " ".join(_fmt(v) for v in values._items)))
-    if values.size() != 1:
+            trace.append((token, " ".join(_fmt(v) for v in values._items)))
+    if values.size()!= 1:
         raise ValueError("malformed expression: operands left over")
     return values.pop()
 
@@ -95,7 +92,7 @@ def apply_operator(operator, left, right):
         return left * right
     if operator == "/":
         if right == 0:
-            raise ZeroDivisionError("division by zero in the expression")
+            raise ZeroDivisionError("division by zero in expression")
         return left / right
     if operator == "%":
         if right == 0:
@@ -103,7 +100,7 @@ def apply_operator(operator, left, right):
         return left % right
     if operator == "^":
         return left ** right
-    raise ValueError(f"unknown operator: {operator}")
+    raise ValueError(f"unknown operator " + operator)
 
 
 def convert_and_evaluate(expression):
