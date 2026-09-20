@@ -18,94 +18,81 @@ class CircularQueue:
     def __init__(self, capacity):
         if capacity < 1:
             raise ValueError("capacity must be at least 1")
+        self._capacity = capacity
         self._items = [None] * capacity
         self._front = 0
         self._count = 0
 
     def enqueue(self, item):
         if self.is_full():
-            raise IndexError("enqueue on full queue")
-        rear = (self._front + self._count) % len(self._items)
+            raise OverflowError("queue is full")
+        rear = (self._front + self._count) % self._capacity
         self._items[rear] = item
         self._count += 1
 
     def dequeue(self):
         if self.is_empty():
-            raise IndexError("dequeue on empty queue")
+            raise IndexError("dequeue from an empty queue")
         item = self._items[self._front]
         self._items[self._front] = None
-        self._front = (self._front + 1) % len(self._items)
+        self._front = (self._front + 1) % self._capacity
         self._count -= 1
         return item
 
     def peek(self):
         if self.is_empty():
-            raise IndexError("peek on empty queue")
+            raise IndexError("peek on an empty queue")
         return self._items[self._front]
 
     def is_empty(self):
-        if self._count == 0:
-            return True
-        else:
-            return False
+        return self._count == 0
 
     def is_full(self):
-        if self._count == len(self._items):
-            return True
-        else:
-            return False
+        return self._count == self._capacity
 
     def size(self):
-       if self._count == 0:
-           return 0
-       else:
-           return self._count
+        return self._count
 
     def slots(self):
-       if self.is_empty():
-           return len(self._items)
-        else: 
-          return len(self._items) - self._count
+        return list(self._items)
 
 
 class Deque:
-    """A queue you may add to and remove from at both ends."""
 
     def __init__(self):
-     if not hassattr(self, "_items"):
-         self._items = []
+        self._items = []
 
     def add_front(self, item):
-        """Step 9. Insert at position 0."""
-        raise NotImplementedError("Step 9: insert the item at index 0")
+        self._items.insert(0, item)
 
     def add_rear(self, item):
-        """Step 10. Append at the end."""
-        raise NotImplementedError("Step 10: append the item")
+        self._items.append(item)
 
     def remove_front(self):
-        """Step 11. Remove and return index 0. IndexError when empty."""
-        raise NotImplementedError("Step 11: guard for empty, then pop index 0")
+        if self.is_empty():
+            raise IndexError("remove_front on an empty deque")
+        return self._items.pop(0)
 
     def remove_rear(self):
-        """Step 12. Remove and return the last item. IndexError when empty."""
-        raise NotImplementedError("Step 12: guard for empty, then pop the last item")
+        if self.is_empty():
+            raise IndexError("remove_rear on an empty deque")
+        return self._items.pop()
 
     def is_empty(self):
-        """Step 13. True when there is nothing in the deque."""
-        raise NotImplementedError("Step 13: return whether the list is empty")
+        return len(self._items) == 0
 
     def size(self):
-        """Step 14. Return how many items are held."""
-        raise NotImplementedError("Step 14: return the length of self._items")
+        return len(self._items)
 
 
 def is_palindrome(text):
-    """Step 15. True when text reads the same both ways.
+    d = Deque()
+    for char in text:
+        if char.isalpha():
+            d.add_rear(char.lower())
 
-    Ignore anything that is not a letter, and ignore case. Load the letters
-    into a Deque, then compare front against rear until one or zero letters
-    remain. A word of odd length ends with one letter in the middle, which
-    always matches itself, so stop while size is greater than 1.
-    """
-    raise NotImplementedError("Step 15: load the letters into a Deque, then compare from both ends")
+    while d.size() > 1:
+        if d.remove_front() != d.remove_rear():
+            return False
+
+    return True
